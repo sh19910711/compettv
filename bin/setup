@@ -1,0 +1,11 @@
+#!/bin/sh
+
+setup() {
+  local top=$(git rev-parse --show-toplevel)
+  cp ${top}/lib/main.cpp ./
+  touch input.txt
+  touch expected.txt
+  touch OMakefile
+}
+
+setup $@
