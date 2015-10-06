@@ -3,7 +3,7 @@
 setup() {
   local top=$(git rev-parse --show-toplevel)
   cp ${top}/lib/main.cpp ./
-  cp ${top}/lib/OMakefile ./
+  cp ${top}/lib/OMakefile.txt ./OMakefile
   touch input.txt
   touch expected.txt
 }
