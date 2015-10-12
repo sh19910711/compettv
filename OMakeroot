@@ -11,7 +11,8 @@ define_rules() =
 
   output.txt: input.txt expected.txt main main.cpp
     timeout $(TIMEOUT) bash -c "./main < input.txt > output.txt" || echo ">>> ERROR: TIMEOUT"
-    diff expected.txt output.txt && echo ">>> Passed Tests"
+    diff expected.txt output.txt || cat output.txt
+    diff expected.txt output.txt >/dev/null && echo ">>> Passed Tests"
 
   .PHONY: clean
   clean:
