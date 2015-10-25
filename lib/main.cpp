@@ -8,20 +8,12 @@ bool input() {
   return false;
 }
 
-void init() {
-}
-
 void solve() {
-}
-
-void output() {
 }
 
 int main() {
   while (input()) {
-    init();
     solve();
-    output();
   }
   return 0;
 }
