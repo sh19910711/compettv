@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 setup() {
   local top=$(git rev-parse --show-toplevel)

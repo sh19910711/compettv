@@ -1,6 +1,9 @@
+#!/bin/bash
+
 omake() {
   local top=$(git rev-parse --show-toplevel)
   local path=$(realpath --relative-base ${top} $(pwd))
   sudo docker run -w /workspace/${path} -v ${top}:/workspace -ti contest omake $@
 }
+
 omake $@
