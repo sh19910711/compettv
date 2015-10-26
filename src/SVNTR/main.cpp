@@ -2,6 +2,7 @@
 using namespace std;
 
 #define rep(i, n) for (int i = 0; i < n; ++i)
+#define replr(i, l, r) for (int i = l; i < r; ++i)
 typedef long long int_t;
 
 const int N_MAX = 150 + 1;
@@ -16,45 +17,55 @@ bool input() {
   return false;
 }
 
-bool check(int a, int b, int c, int d) {
-  return a + b + c + d;
-}
+struct fenwick_t {
+  int n;
+  vector<int_t> v;
+  void build(int n) {
+    ++n;
+    this->n = n;
+    v.assign(n, 0);
+  }
+  void add(int k, int_t x) {
+    ++k;
+    while (k < n) {
+      v[k] += x;
+      k += k & (-k);
+    }
+  }
+  int_t get(int x) {
+    ++x;
+    int_t res = 0;
+    while (x > 0) {
+      res += v[x];
+      x -= x & (-x);
+    }
+    return res;
+  }
+};
 
 typedef set<int_t> set_t;
-int_t s1[N_MAX][N_MAX]; // line
-int_t s2[N_MAX][N_MAX]; // block
-
-inline int_t sum(int r1, int c1, int r2, int c2) {
-  return s2[r2][c2] - s2[r1-1][c2] - s2[r2][c1-1] + s2[r1-1][c1-1];
-}
 
 int_t solve() {
-  rep (i, h) fill(s1[i], s1[i]+N_MAX, 0);
-  rep (i, h) fill(s2[i], s2[i]+N_MAX, 0);
-  rep (i, h) rep (j, w) {
-    s1[i+1][j+1] = s1[i+1][j] + a[i][j];
-  }
-  rep (i, h+1) rep (j, w+1) {
-    s2[i][j] += s1[i][j];
-    rep (k, i) {
-      s2[i][j] += s1[k][j];
-    }
-  }
-  int res = 0;
-  for (int r1 = 1; r1 <= h; ++r1) for (int r2 = r1; r2 <= h; ++r2) {
-    int_t t = 0;
+  int_t res = 0;
+  int_t s1[N_MAX][N_MAX];
+  int_t s2[N_MAX][N_MAX];
+  rep (r0, h) {
+    fill(s1[r0], s1[r0]+w, 0);
+    fill(s2[r0], s2[r0]+w, 0);
     set_t v;
-    for (int c = 1; c <= w; ++c) {
-      t += s2[r2][c] - s2[r1-1][c];
-      v.insert(t);
+    fenwick_t tree;
+    replr (r, r0, h) {
+      rep (i, w) s1[r0][i] += a[r][i];
+      rep (i, w) s2[r0][i] = s1[r0][i];
+      rep (i, w) if (i - 1 > 0) s2[r0][i] += s2[r0][i-1];
+      rep (i, w) v.insert(s2[r0][i]);
+      tree.build(v.size());
+      rep (i, w) {
+        tree.add(distance(v.begin(), v.lower_bound(s2[r0][i])), 1);
+        res += i + 1 - tree.get(distance(v.begin(), v.lower_bound(s2[r0][i] - s)));
+      }
     }
-    res += 1 + distance(v.begin(), v.lower_bound(s));
-    // for (int c1 = 1; c1 <= w; ++c1) for (int c2 = c1; c2 <= w; ++c2) {
-    //   if (sum(r1, c1, r2, c2) <= s) ++res;
-    // }
   }
-  // printf("sum(%d, %d, %d, %d) = %d, res = %d\n", r1, c1, r2, c2, sum(r1, c1, r2, c2-1), res);
-  // printf("\n");
   return res;
 }
 
