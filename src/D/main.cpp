@@ -5,11 +5,10 @@ using namespace std;
 typedef long long int_t;
 
 namespace {
-  double x1, y1, x2, y2;
-  double v_max;
-  int t;
-  double vx, vy;
-  double wx, wy;
+  int x1, y1, x2, y2;
+  int v_max, t;
+  int vx, vy;
+  int wx, wy;
 
   bool input() {
     if (cin >> x1 >> y1 >> x2 >> y2) {
@@ -33,10 +32,6 @@ namespace {
     return sqrt(x(v) * x(v) + y(v) * y(v));
   }
 
-  vector_t norm(const vector_t& v) {
-    return vector_t(x(v) / size(v), y(v) / size(v));
-  }
-
   void print(const vector_t& v) {
     cout << "(" << x(v) << ", " << y(v) << ")" << endl;
   }
@@ -45,26 +40,29 @@ namespace {
     return vector_t(x(v) * k, y(v) * k);
   }
 
-  vector_t diff(const vector_t& a, const vector_t& b) {
+  vector_t sub(const vector_t& a, const vector_t& b) {
     return vector_t(x(a) - x(b), y(a) - y(b));
   }
 
-  vector_t add(const vector_t& a, const vector_t& b) {
-    return vector_t(x(a) + x(b), y(a) + y(b));
-  }
-
   double solve() {
-    vector_t v = diff(x1, y1, x2, y2);
-    double need = size(v);
-    v = mul(norm(v), v_max);
-    vector_t v1 = add(v, vector_t(vx, vy));
-    double len = size(v1) * t;
-    if (len >= need) {
-      return need / size(v1);
-    } else {
-      vector_t v2 = add(v, vector_t(wx, wy));
-      return t + (need - len) / size(v2);
+    double l = 0.0;
+    double r = 1e12;
+    rep (k, 1e6) {
+      double mid = (l + r) / 2.0;
+      vector_t d = diff(x1, y1, x2, y2);
+      if (mid > t) {
+        d = sub(d, mul(vector_t(vx, vy), t));
+        d = sub(d, mul(vector_t(wx, wy), mid - t));
+      } else {
+        d = sub(d, mul(vector_t(vx, vy), mid));
+      }
+      if (size(d) > v_max * mid) {
+        l = mid;
+      } else {
+        r = mid;
+      }
     }
+    return (l + r) / 2.0;
   }
 }
 
@@ -72,7 +70,7 @@ int main() {
   ios::sync_with_stdio(0);
   cin.tie(0);
   while (input()) {
-    cout << solve() << endl;
+    printf("%.12f\n", solve());
   }
   return 0;
 }
