@@ -21,12 +21,13 @@ function exec(cmd) {
 gulp.task('watch', ()=> {
   gulp.watch('src/**/*.js').on('change', (file)=> {
     // paths
+    const script    = path.join(path.dirname(file.path), 'main.js')
     const input     = path.join(path.dirname(file.path), 'input.txt')
     const output    = path.join(path.dirname(file.path), 'output.txt')
     const expected  = path.join(path.dirname(file.path), 'expected.txt')
 
     // run
-    exec(`timeout 5 node ${file.path} < ${input} > ${output}`).then(()=> {
+    exec(`timeout 5 sh -c "node ${script} < ${input} > ${output}"`).then(()=> {
       exec(`diff ${expected} ${output}`).then((stdout)=> {
         console.log('passed')
       }).catch((stderr)=> {
